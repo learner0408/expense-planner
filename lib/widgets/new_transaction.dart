@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../widgets/adaptive_text_button.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -56,12 +61,34 @@ class _NewTransactionState extends State<NewTransaction> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              // Platform.isIOS
+              //     ? CupertinoTextField(
+              //         placeholder: "Title",
+              //         onChanged: (val) => _titleInput = val,
+              //         onSubmitted: (_) => _submitData(),
+              //         style: TextStyle(fontFamily: "OpenSans-Regular"),
+              //       )
+              //     :
               TextField(
                 decoration: InputDecoration(labelText: "Title"),
                 onChanged: (val) => _titleInput = val,
                 onSubmitted: (_) => _submitData(),
                 style: TextStyle(fontFamily: "OpenSans-Regular"),
               ),
+              if (Platform.isIOS)
+                SizedBox(
+                  height: 10,
+                ),
+              // Platform.isIOS
+              //     ? CupertinoTextField(
+              //         placeholder: "Amount",
+              //         onChanged: (val) => _titleInput = val,
+              //         keyboardType:
+              //             TextInputType.numberWithOptions(decimal: true),
+              //         onSubmitted: (_) => _submitData(),
+              //         style: TextStyle(fontFamily: "OpenSans-Regular"),
+              //       )
+              //     :
               TextField(
                   decoration: InputDecoration(labelText: "Amount"),
                   onChanged: (val) => _amountInput = val,
@@ -77,16 +104,7 @@ class _NewTransactionState extends State<NewTransaction> {
                           ? "No Date Chosen!"
                           : "Date: ${DateFormat.yMd().format(_selectedDate!)}"),
                     ),
-                    TextButton(
-                        style: TextButton.styleFrom(
-                            primary: Theme.of(context).primaryColor),
-                        onPressed: () {
-                          _openDatePicker();
-                        },
-                        child: Text(
-                          "Choose Date",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ))
+                    AdaptiveTextButton("Choose Date", _openDatePicker),
                   ],
                 ),
               ),

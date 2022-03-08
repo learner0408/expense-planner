@@ -1,7 +1,11 @@
-import './widgets/new_transaction.dart';
-import './widgets/charts.dart';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import './widgets/new_transaction.dart';
+import './widgets/charts.dart';
 import './widgets/transaction_list.dart';
 import './models/transaction.dart';
 
@@ -23,7 +27,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.purple,
           accentColor: Colors.amber,
           fontFamily: 'Quicksand',
-          textTheme: TextTheme(
+          textTheme: const TextTheme(
               headline6: TextStyle(
                   fontFamily: 'OpenSans',
                   fontSize: 16,
@@ -97,65 +101,91 @@ class _HomePageState extends State<HomePage> {
   bool _showChart = false;
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final appBar = AppBar(
-      title: Text("Expense Planner"),
-      actions: [
-        IconButton(
-            onPressed: () => _openAddNewTarnsaction(context),
-            icon: Icon(Icons.add))
-      ],
-    );
+    final meadiaQuery = MediaQuery.of(context);
+    final isLandscape = meadiaQuery.orientation == Orientation.landscape;
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: Text("Expense Planner"),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              GestureDetector(
+                onTap: () => _openAddNewTarnsaction(context),
+                child: Icon(CupertinoIcons.add),
+              )
+            ]),
+          ) as PreferredSizeWidget
+        : AppBar(
+            title: Text("Expense Planner"),
+            actions: [
+              IconButton(
+                  onPressed: () => _openAddNewTarnsaction(context),
+                  icon: Icon(Icons.add))
+            ],
+          );
     final txListWidget = Container(
-        height: (MediaQuery.of(context).size.height -
+        height: (meadiaQuery.size.height -
                 appBar.preferredSize.height -
-                MediaQuery.of(context).padding.top) *
+                meadiaQuery.padding.top) *
             0.7,
         child: TransactionList(_userTransactions, _deleteTransaction));
-    return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          //mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            if (isLandscape)
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text("Show Chart"),
-                Switch(
-                    value: _showChart,
-                    onChanged: (val) {
-                      setState(() {
-                        _showChart = val;
-                      });
-                    })
-              ]),
-            if (!isLandscape)
-              Container(
-                  height: (MediaQuery.of(context).size.height -
-                          appBar.preferredSize.height -
-                          MediaQuery.of(context).padding.top) *
-                      0.3,
-                  child: Chart(_recentTransactions)),
-            if (!isLandscape) txListWidget,
-            if (isLandscape)
-              _showChart
-                  ? Container(
-                      height: (MediaQuery.of(context).size.height -
-                              appBar.preferredSize.height -
-                              MediaQuery.of(context).padding.top) *
-                          0.7,
-                      child: Chart(_recentTransactions))
-                  : txListWidget,
-          ],
-        ),
+
+    final bodyPart = SafeArea(
+        child: SingleChildScrollView(
+      child: Column(
+        //mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          if (isLandscape)
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text(
+                "Show Chart",
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Switch.adaptive(
+                  activeColor: Theme.of(context).accentColor,
+                  value: _showChart,
+                  onChanged: (val) {
+                    setState(() {
+                      _showChart = val;
+                    });
+                  })
+            ]),
+          if (!isLandscape)
+            Container(
+                height: (meadiaQuery.size.height -
+                        appBar.preferredSize.height -
+                        meadiaQuery.padding.top) *
+                    0.3,
+                child: Chart(_recentTransactions)),
+          if (!isLandscape) txListWidget,
+          if (isLandscape)
+            _showChart
+                ? Container(
+                    height: (meadiaQuery.size.height -
+                            appBar.preferredSize.height -
+                            meadiaQuery.padding.top) *
+                        0.7,
+                    child: Chart(_recentTransactions))
+                : txListWidget,
+        ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _openAddNewTarnsaction(context),
-        child: Icon(Icons.add),
-      ),
-    );
+    ));
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            child: bodyPart,
+            navigationBar: appBar as ObstructingPreferredSizeWidget,
+          )
+        : Scaffold(
+            appBar: appBar,
+            body: bodyPart,
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Platform.isIOS
+                ? Container()
+                : FloatingActionButton(
+                    onPressed: () => _openAddNewTarnsaction(context),
+                    child: Icon(Icons.add),
+                  ),
+          );
   }
 }
