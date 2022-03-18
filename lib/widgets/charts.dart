@@ -8,7 +8,8 @@ class Chart extends StatelessWidget {
   //const ({ Key? key }) : super(key: key);
 
   final List<Transaction> recentTransactions;
-  Chart(this.recentTransactions);
+  // ignore: use_key_in_widget_constructors
+  const Chart(this.recentTransactions);
 
   List<Map<String, Object>> get groupedTransactionsValues {
     return List.generate(7, (index) {
@@ -40,9 +41,9 @@ class Chart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 6,
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: groupedTransactionsValues.map((data) {

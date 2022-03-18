@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import './widgets/new_transaction.dart';
 import './widgets/charts.dart';
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
               button: TextStyle(color: Colors.white)),
-          appBarTheme: AppBarTheme(
+          appBarTheme: const AppBarTheme(
               titleTextStyle: TextStyle(
             fontFamily: 'OpenSans',
             fontSize: 20.0,
@@ -61,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     return _userTransactions.where((tx) {
       return tx.date.isAfter(
         DateTime.now().subtract(
-          Duration(days: 7),
+          const Duration(days: 7),
         ),
       );
     }).toList();
@@ -98,33 +97,82 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  List<Widget> _BuilderLandscapeContent(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+    return [
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(
+          "Show Chart",
+          style: Theme.of(context).textTheme.headline6,
+        ),
+        Switch.adaptive(
+            activeColor: Theme.of(context).accentColor,
+            value: _showChart,
+            onChanged: (val) {
+              setState(() {
+                _showChart = val;
+              });
+            })
+      ]),
+      _showChart
+          ? Container(
+              height: (mediaQuery.size.height -
+                      appBar.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  0.7,
+              child: Chart(_recentTransactions))
+          : txListWidget
+    ];
+  }
+
+  List<Widget> _BuilderPortraitContent(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+    return [
+      Container(
+          height: (mediaQuery.size.height -
+                  appBar.preferredSize.height -
+                  mediaQuery.padding.top) *
+              0.3,
+          child: Chart(_recentTransactions)),
+      txListWidget
+    ];
+  }
+
+  Widget _BuilderIOSAppBar() {
+    return CupertinoNavigationBar(
+      middle: const Text("Expense Planner"),
+      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+        GestureDetector(
+          onTap: () => _openAddNewTarnsaction(context),
+          child: const Icon(CupertinoIcons.add),
+        )
+      ]),
+    );
+  }
+
+  Widget _BuilderAndroidAppBar() {
+    return AppBar(
+      title: const Text("Expense Planner"),
+      actions: [
+        IconButton(
+            onPressed: () => _openAddNewTarnsaction(context),
+            icon: const Icon(Icons.add))
+      ],
+    );
+  }
+
   bool _showChart = false;
   @override
   Widget build(BuildContext context) {
-    final meadiaQuery = MediaQuery.of(context);
-    final isLandscape = meadiaQuery.orientation == Orientation.landscape;
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final PreferredSizeWidget appBar = Platform.isIOS
-        ? CupertinoNavigationBar(
-            middle: Text("Expense Planner"),
-            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-              GestureDetector(
-                onTap: () => _openAddNewTarnsaction(context),
-                child: Icon(CupertinoIcons.add),
-              )
-            ]),
-          ) as PreferredSizeWidget
-        : AppBar(
-            title: Text("Expense Planner"),
-            actions: [
-              IconButton(
-                  onPressed: () => _openAddNewTarnsaction(context),
-                  icon: Icon(Icons.add))
-            ],
-          );
+        ? _BuilderIOSAppBar() as PreferredSizeWidget
+        : _BuilderAndroidAppBar() as PreferredSizeWidget;
     final txListWidget = Container(
-        height: (meadiaQuery.size.height -
+        height: (mediaQuery.size.height -
                 appBar.preferredSize.height -
-                meadiaQuery.padding.top) *
+                mediaQuery.padding.top) *
             0.7,
         child: TransactionList(_userTransactions, _deleteTransaction));
 
@@ -135,37 +183,11 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           if (isLandscape)
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
-                "Show Chart",
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              Switch.adaptive(
-                  activeColor: Theme.of(context).accentColor,
-                  value: _showChart,
-                  onChanged: (val) {
-                    setState(() {
-                      _showChart = val;
-                    });
-                  })
-            ]),
+            ..._BuilderLandscapeContent(
+                mediaQuery, appBar as AppBar, txListWidget),
           if (!isLandscape)
-            Container(
-                height: (meadiaQuery.size.height -
-                        appBar.preferredSize.height -
-                        meadiaQuery.padding.top) *
-                    0.3,
-                child: Chart(_recentTransactions)),
-          if (!isLandscape) txListWidget,
-          if (isLandscape)
-            _showChart
-                ? Container(
-                    height: (meadiaQuery.size.height -
-                            appBar.preferredSize.height -
-                            meadiaQuery.padding.top) *
-                        0.7,
-                    child: Chart(_recentTransactions))
-                : txListWidget,
+            ..._BuilderPortraitContent(
+                mediaQuery, appBar as AppBar, txListWidget),
         ],
       ),
     ));
@@ -184,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                 ? Container()
                 : FloatingActionButton(
                     onPressed: () => _openAddNewTarnsaction(context),
-                    child: Icon(Icons.add),
+                    child: const Icon(Icons.add),
                   ),
           );
   }

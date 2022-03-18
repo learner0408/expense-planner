@@ -7,7 +7,8 @@ class AdaptiveTextButton extends StatelessWidget {
   //const AdaptiveTextButton({ Key? key }) : super(key: key);
   final String text;
   final Function datePicker;
-  AdaptiveTextButton(this.text, this.datePicker);
+  // ignore: use_key_in_widget_constructors
+  const AdaptiveTextButton(this.text, this.datePicker);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class AdaptiveTextButton extends StatelessWidget {
             },
             child: Text(
               text,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ))
         : TextButton(
             style:
@@ -28,7 +29,7 @@ class AdaptiveTextButton extends StatelessWidget {
             },
             child: Text(
               text,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ));
   }
 }

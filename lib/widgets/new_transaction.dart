@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,7 +7,8 @@ import '../widgets/adaptive_text_button.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
-  NewTransaction(this.addTx);
+  // ignore: use_key_in_widget_constructors
+  const NewTransaction(this.addTx);
 
   @override
   State<NewTransaction> createState() => _NewTransactionState();
@@ -70,13 +70,13 @@ class _NewTransactionState extends State<NewTransaction> {
               //       )
               //     :
               TextField(
-                decoration: InputDecoration(labelText: "Title"),
+                decoration: const InputDecoration(labelText: "Title"),
                 onChanged: (val) => _titleInput = val,
                 onSubmitted: (_) => _submitData(),
-                style: TextStyle(fontFamily: "OpenSans-Regular"),
+                style: const TextStyle(fontFamily: "OpenSans-Regular"),
               ),
               if (Platform.isIOS)
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
               // Platform.isIOS
@@ -90,11 +90,12 @@ class _NewTransactionState extends State<NewTransaction> {
               //       )
               //     :
               TextField(
-                  decoration: InputDecoration(labelText: "Amount"),
+                  decoration: const InputDecoration(labelText: "Amount"),
                   onChanged: (val) => _amountInput = val,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   onSubmitted: (_) => _submitData(),
-                  style: TextStyle(fontFamily: "OpenSans-Regular")),
+                  style: const TextStyle(fontFamily: "OpenSans-Regular")),
               Container(
                 height: 70,
                 child: Row(
@@ -114,7 +115,7 @@ class _NewTransactionState extends State<NewTransaction> {
                   // onPrimary: Theme.of(context).textTheme.button.color==null ? null : Theme.of(context).textTheme.button.color
                 ),
                 onPressed: _submitData,
-                child: Text(
+                child: const Text(
                   "Add Transaction",
                   // style: TextStyle(
                   //   color: Theme.of(context).textTheme.button.color

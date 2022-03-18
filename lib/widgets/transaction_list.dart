@@ -4,9 +4,10 @@ import 'package:intl/intl.dart';
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
-  Function deleteTx;
+  final Function deleteTx;
 
-  TransactionList(this.transactions, this.deleteTx);
+  // ignore: use_key_in_widget_constructors
+  const TransactionList(this.transactions, this.deleteTx);
   @override
   Widget build(BuildContext context) {
     return transactions.isEmpty
@@ -17,7 +18,7 @@ class TransactionList extends StatelessWidget {
                   "No Transactions Yet!",
                   style: Theme.of(context).textTheme.headline6,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 Container(
@@ -33,12 +34,12 @@ class TransactionList extends StatelessWidget {
             itemBuilder: (ctx, index) {
               return Card(
                 elevation: 5.0,
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
                 child: ListTile(
                   leading: CircleAvatar(
                     radius: 30,
                     child: Padding(
-                      padding: EdgeInsets.all(5),
+                      padding: const EdgeInsets.all(5),
                       child: FittedBox(
                         child: Text(
                           "\$${transactions[index].amount}",
